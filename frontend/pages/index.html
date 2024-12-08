@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyComputer</title>
+    <style>
+        /* Combined CSS */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+
+        .header {
+            text-align: center;
+            background-color: #2d3436;
+            color: #ffffff;
+            padding: 20px 10px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+
+        .header .btn {
+            margin-top: 10px;
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #0984e3;
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .header .btn:hover {
+            background-color: #74b9ff;
+        }
+
+        .main {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .part {
+            display: block;
+            text-align: center;
+            background-color: #ffffff;
+            border: 1px solid #dcdde1;
+            border-radius: 10px;
+            overflow: hidden;
+            width: 200px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-decoration: none;
+            color: #2d3436;
+        }
+
+        .part img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .part h2 {
+            margin: 10px 0;
+            font-size: 1.2rem;
+        }
+
+        .part:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>Build Your Own PC</h1>
+        <a href="build1.html" class="btn">Start Building</a>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <a href="cpu.html" class="part">
+                <img src="../images/cpu.png" alt="CPU">
+                <h2>CPU</h2>
+            </a>
+            <a href="gpu.html" class="part">
+                <img src="../images/gpu.png" alt="GPU">
+                <h2>GPU</h2>
+            </a>
+            <a href="cpu-cooler.html" class="part">
+                <img src="../images/cpu-cooler.png" alt="CPU Cooler">
+                <h2>CPU Cooler</h2>
+            </a>
+            <a href="psu.html" class="part">
+                <img src="../images/psu.png" alt="PSU">
+                <h2>PSU</h2>
+            </a>
+            <a href="case.html" class="part">
+                <img src="../images/case.png" alt="PC Case">
+                <h2>Case</h2>
+            </a>
+            <a href="storage.html" class="part">
+                <img src="../images/storage.png" alt="Storage">
+                <h2>Storage</h2>
+            </a>
+            <a href="memory.html" class="part">
+                <img src="../images/memory.png" alt="Memory">
+                <h2>Memory</h2>
+            </a>
+            <a href="motherboard.html" class="part">
+                <img src="../images/motherboard.png" alt="Motherboard">
+                <h2>Motherboard</h2>
+            </a>
+        </div>
+    </main>
+</body>
+</html>
