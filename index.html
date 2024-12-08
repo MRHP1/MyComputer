@@ -7,12 +7,33 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- Header Section -->
     <header>
-        <h1>Computer Part Picker</h1>
+        <h1>mycomputer</h1>
     </header>
+    
     <main>
+        <!-- Left side category buttons -->
+        <div id="category-buttons-container">
+            <button class="category-btn" id="cpu-btn">CPU</button>
+            <button class="category-btn" id="cpu-cooler-btn">CPU Cooler</button>
+            <button class="category-btn" id="gpu-btn">GPU</button>
+            <button class="category-btn" id="ram-btn">RAM</button>
+            <button class="category-btn" id="storage-btn">Storage</button>
+            <button class="category-btn" id="psu-btn">PSU</button>
+            <button class="category-btn" id="case-btn">Case</button>
+            <button class="category-btn" id="motherboard-btn">Motherboard</button>
+        </div>
+        
+        <!-- Right side where parts are displayed -->
         <div id="parts-container"></div>
     </main>
+
+    <!-- Footer Section -->
+    <footer>
+        <p>&copy; 2024 mycomputer. All rights reserved.</p>
+    </footer>
+
     <script src="script.js"></script>
 </body>
 </html>
