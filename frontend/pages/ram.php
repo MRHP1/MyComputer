@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CPU Parts</title>
+    <title>RAM</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -13,15 +13,30 @@
         }
 
         .header {
-            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             background-color: #2d3436;
             color: #ffffff;
-            padding: 20px 10px;
+            padding: 10px 20px;
         }
 
         .header h1 {
             margin: 0;
             font-size: 2.5rem;
+        }
+
+        .home-button {
+            text-decoration: none;
+            color: #ffffff;
+            background-color: #0984e3;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .home-button:hover {
+            background-color: #74b9ff;
         }
 
         .parts-container {
@@ -114,7 +129,8 @@
 </head>
 <body>
     <header class="header">
-        <h1>CPU Parts</h1>
+        <a href="index.html" class="home-button">Home</a>
+        <h1>RAM</h1>
     </header>
     <div class="parts-container">
         <?php
@@ -133,15 +149,15 @@
 
         // Handle file upload
         if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["upload_image"])) {
-            $cpuId = $_POST["cpu_id"];
+            $ramId = $_POST["ram_id"];
             $imageFile = $_FILES["image"]["name"];
-            $targetDir = "../images/cpu/";
+            $targetDir = "../images/ram/";
             $targetFile = $targetDir . basename($imageFile);
 
             if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile)) {
-                $updateImageSql = "UPDATE CPU SET image = '$targetFile' WHERE id = $cpuId";
+                $updateImageSql = "UPDATE RAM SET image = '$targetFile' WHERE id = $ramId";
                 if ($conn->query($updateImageSql) === TRUE) {
-                    echo "<p>Image uploaded successfully for CPU ID: $cpuId</p>";
+                    echo "<p>Image uploaded successfully for RAM ID: $ramId</p>";
                 } else {
                     echo "<p>Error updating image: " . $conn->error . "</p>";
                 }
@@ -150,41 +166,36 @@
             }
         }
 
-        // Fetch CPU parts from the database
-        $sql = "SELECT * FROM CPU";
+        // Fetch RAM from the database
+        $sql = "SELECT * FROM RAM";
         $result = $conn->query($sql);
 
         if ($result->num_rows > 0) {
             while($row = $result->fetch_assoc()) {
-                $imagePath = $row["image"] ?: "../images/cpu/default.jpg"; // Default image if none exists
+                $imagePath = $row["image"] ?: "../images/ram/default.jpg"; // Default image if none exists
 
                 echo '<div class="part">';
                 echo '<img src="' . $imagePath . '" alt="' . $row["name"] . '">';
                 echo '<h3>' . $row["name"] . '</h3>';
                 echo '<ul class="specs">';
-                echo '<li><strong>Cores:</strong> ' . $row["core"] . '</li>';
-                echo '<li><strong>Core Clock:</strong> ' . $row["core_clock"] . '</li>';
-                echo '<li><strong>Boost Clock:</strong> ' . $row["boost_clock"] . '</li>';
-                echo '<li><strong>Microarchitecture:</strong> ' . $row["microarchitecture"] . '</li>';
-                echo '<li><strong>TDP:</strong> ' . $row["tdp"] . '</li>';
-                echo '<li><strong>iGPU:</strong> ' . $row["igpu"] . '</li>';
-                echo '<li><strong>Rating:</strong> ' . $row["rating"] . '</li>';
+                echo '<li><strong>Generation:</strong> ' . $row["generation"] . '</li>';
+                echo '<li><strong>Speed:</strong> ' . $row["speed"] . '</li>';
                 echo '<li><strong>Price:</strong> $' . $row["price"] . '</li>';
                 echo '<li><strong><a href="' . $row["link"] . '" target="_blank">View More</a></strong></li>';
                 echo '</ul>';
 
                 // CRUD Buttons
                 echo '<div class="crud-buttons">';
-                echo '<form action="cpu_edit.php" method="GET" style="display:inline;">';
+                echo '<form action="ram_edit.php" method="GET" style="display:inline;">';
                 echo '<input type="hidden" name="id" value="' . $row["id"] . '">';
                 echo '<button type="submit" class="edit">Edit</button>';
                 echo '</form>';
-                echo '<form action="cpu_delete.php" method="POST" style="display:inline;">';
+                echo '<form action="ram_delete.php" method="POST" style="display:inline;">';
                 echo '<input type="hidden" name="id" value="' . $row["id"] . '">';
                 echo '<button type="submit" class="delete">Delete</button>';
                 echo '</form>';
                 echo '<form action="" method="POST" enctype="multipart/form-data" style="display:inline;">';
-                echo '<input type="hidden" name="cpu_id" value="' . $row["id"] . '">';
+                echo '<input type="hidden" name="ram_id" value="' . $row["id"] . '">';
                 echo '<input type="file" name="image" required>';
                 echo '<button type="submit" name="upload_image" class="upload">Upload Image</button>';
                 echo '</form>';
@@ -193,7 +204,7 @@
                 echo '</div>';
             }
         } else {
-            echo "<p>No CPU parts available.</p>";
+            echo "<p>No RAM available.</p>";
         }
 
         $conn->close();

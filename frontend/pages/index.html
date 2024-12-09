@@ -181,7 +181,7 @@
             <div id="category-buttons-container">
                 <div class="category-btn-container">
                     <button class="category-btn" id="cpu-btn"><img src="../images/cpu.png" alt="CPU">CPU</button>
-                    <button class="category-btn" id="cpu-cooler-btn"><img src="../images/cpu-cooler.png" alt="CPU Cooler">CPU Cooler</button>
+                    <button class="category-btn" id="cpu_cooler-btn"><img src="../images/cpu-cooler.png" alt="CPU Cooler">CPU Cooler</button>
                     <button class="category-btn" id="gpu-btn"><img src="../images/gpu.png" alt="GPU">GPU</button>
                     <button class="category-btn" id="ram-btn"><img src="../images/ram.png" alt="RAM">RAM</button>
                 </div>
@@ -204,37 +204,38 @@
     </footer>
 
     <script>
-        document.getElementById('cpu-btn').addEventListener('click', function() {
-            fetchParts('CPU');
-        });
+ document.getElementById('cpu-btn').addEventListener('click', function () {
+    window.location.href = 'cpu.php';
+});
 
-        document.getElementById('cpu-cooler-btn').addEventListener('click', function() {
-            fetchParts('CPU Cooler');
-        });
+document.getElementById('cpu_cooler-btn').addEventListener('click', function () {
+    window.location.href = 'cpu_cooler.php';
+});
 
-        document.getElementById('gpu-btn').addEventListener('click', function() {
-            fetchParts('GPU');
-        });
+document.getElementById('gpu-btn').addEventListener('click', function () {
+    window.location.href = 'gpu.php';
+});
 
-        document.getElementById('ram-btn').addEventListener('click', function() {
-            fetchParts('RAM');
-        });
+document.getElementById('ram-btn').addEventListener('click', function () {
+    window.location.href = 'ram.php';
+});
 
-        document.getElementById('storage-btn').addEventListener('click', function() {
-            fetchParts('Storage');
-        });
+document.getElementById('storage-btn').addEventListener('click', function () {
+    window.location.href = 'storage.php';
+});
 
-        document.getElementById('psu-btn').addEventListener('click', function() {
-            fetchParts('PSU');
-        });
+document.getElementById('psu-btn').addEventListener('click', function () {
+    window.location.href = 'psu.php';
+});
 
-        document.getElementById('case-btn').addEventListener('click', function() {
-            fetchParts('Case');
-        });
+document.getElementById('case-btn').addEventListener('click', function () {
+    window.location.href = 'pc_case.php';
+});
 
-        document.getElementById('motherboard-btn').addEventListener('click', function() {
-            fetchParts('Motherboard');
-        });
+document.getElementById('motherboard-btn').addEventListener('click', function () {
+    window.location.href = 'motherboard.php';
+});
+
 
         function fetchParts(category) {
             const partsContainer = document.getElementById('parts-container');
