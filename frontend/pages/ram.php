@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RAM</title>
+    <title>CPU Coolers</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -13,12 +13,10 @@
         }
 
         .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            text-align: center;
             background-color: #2d3436;
             color: #ffffff;
-            padding: 10px 20px;
+            padding: 20px 10px;
         }
 
         .header h1 {
@@ -26,17 +24,23 @@
             font-size: 2.5rem;
         }
 
-        .home-button {
-            text-decoration: none;
-            color: #ffffff;
+        .back-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
             background-color: #0984e3;
+            color: #fff;
             padding: 10px 15px;
+            text-decoration: none;
             border-radius: 5px;
-            font-size: 1rem;
+            font-weight: bold;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        .home-button:hover {
+        .back-button:hover {
             background-color: #74b9ff;
+            text-decoration: none;
         }
 
         .parts-container {
@@ -129,9 +133,9 @@
 </head>
 <body>
     <header class="header">
-        <a href="index.html" class="home-button">Home</a>
         <h1>RAM</h1>
     </header>
+    <a href="index.html" class="back-button">Back to Home</a>
     <div class="parts-container">
         <?php
         // Database connection

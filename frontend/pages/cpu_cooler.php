@@ -24,6 +24,25 @@
             font-size: 2.5rem;
         }
 
+        .back-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #0984e3;
+            color: #fff;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-button:hover {
+            background-color: #74b9ff;
+            text-decoration: none;
+        }
+
         .parts-container {
             max-width: 1200px;
             margin: 20px auto;
@@ -116,6 +135,7 @@
     <header class="header">
         <h1>CPU Coolers</h1>
     </header>
+    <a href="index.html" class="back-button">Back to Home</a>
     <div class="parts-container">
         <?php
         // Database connection

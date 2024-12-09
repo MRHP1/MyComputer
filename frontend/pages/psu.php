@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PSUs</title>
+    <title>CPU Coolers</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -22,6 +22,25 @@
         .header h1 {
             margin: 0;
             font-size: 2.5rem;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #0984e3;
+            color: #fff;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-button:hover {
+            background-color: #74b9ff;
+            text-decoration: none;
         }
 
         .parts-container {
@@ -114,8 +133,9 @@
 </head>
 <body>
     <header class="header">
-        <h1>PSUs</h1>
+        <h1>PSU</h1>
     </header>
+    <a href="index.html" class="back-button">Back to Home</a>
     <div class="parts-container">
         <?php
         // Database connection
