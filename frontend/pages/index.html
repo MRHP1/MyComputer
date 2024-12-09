@@ -3,16 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MyComputer</title>
+    <title>Part Picker</title>
     <style>
-        /* Combined CSS */
+        /* Basic Styles */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
             background-color: #f5f5f5;
+            display: flex;
+            flex-direction: column; /* Make the layout flow vertically */
+            min-height: 100vh; /* Make sure the body takes at least the full screen height */
+            justify-content: space-between; /* Make sure content takes full height */
         }
-
+        
         .header {
             text-align: center;
             background-color: #2d3436;
@@ -40,93 +44,162 @@
         .header .btn:hover {
             background-color: #74b9ff;
         }
-
-        .main {
+        
+        h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        
+        /* Main content container */
+        main {
             display: flex;
-            flex-wrap: wrap;
             justify-content: center;
+            flex-grow: 1; /* Allow main content to take the remaining space */
             padding: 20px;
         }
 
-        .container {
+        .content-wrapper {
+            width: 100%;
+            max-width: 1200px; /* Max width for the content to stay centered */
             display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+        }
+
+        #category-buttons-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             gap: 20px;
         }
 
-        .part {
+        .category-btn-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 4 columns */
+            gap: 15px;
+            justify-items: center;
+        }
+
+        .category-btn {
             display: block;
             text-align: center;
             background-color: #ffffff;
             border: 1px solid #dcdde1;
-            border-radius: 10px;
+            border-radius: 0.8rem;
             overflow: hidden;
-            width: 200px;
+            width: 150px;
+            height: 160px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s, box-shadow 0.3s;
             text-decoration: none;
             color: #2d3436;
         }
 
-        .part img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
+        .category-btn img {
+            width: 80%;
+            object-fit: contain;
         }
 
-        .part h2 {
-            margin: 10px 0;
-            font-size: 1.2rem;
-        }
-
-        .part:hover {
+        .category-btn:hover {
             transform: translateY(-5px);
             box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Right side part container */
+        #parts-container {
+            padding: 20px;
+            background-color: #fff;
+            width: 100%;
+            margin-top: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Table and sheet styling */
+        .table-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .part-sheet {
+            border: 1px solid #ccc;
+            padding: 20px;
+            width: 100%;
+            max-width: 500px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f4f4f4;
+        }
+        
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px 0;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+        
+        footer p {
+            margin: 0;
         }
     </style>
 </head>
 <body>
+    <!-- Header Section -->
     <header class="header">
         <h1>Build Your Own PC</h1>
-        <a href="build1.html" class="btn">Start Building</a>
+        <a href="build-your-own.html" class="btn">Start Building</a>
     </header>
-
-    <main class="main">
-        <div class="container">
-            <a href="cpu.html" class="part">
-                <img src="../images/cpu.png" alt="CPU">
-                <h2>CPU</h2>
-            </a>
-            <a href="gpu.html" class="part">
-                <img src="../images/gpu.png" alt="GPU">
-                <h2>GPU</h2>
-            </a>
-            <a href="cpu-cooler.html" class="part">
-                <img src="../images/cpu-cooler.png" alt="CPU Cooler">
-                <h2>CPU Cooler</h2>
-            </a>
-            <a href="psu.html" class="part">
-                <img src="../images/psu.png" alt="PSU">
-                <h2>PSU</h2>
-            </a>
-            <a href="case.html" class="part">
-                <img src="../images/case.png" alt="PC Case">
-                <h2>Case</h2>
-            </a>
-            <a href="storage.html" class="part">
-                <img src="../images/storage.png" alt="Storage">
-                <h2>Storage</h2>
-            </a>
-            <a href="memory.html" class="part">
-                <img src="../images/memory.png" alt="Memory">
-                <h2>Memory</h2>
-            </a>
-            <a href="motherboard.html" class="part">
-                <img src="../images/motherboard.png" alt="Motherboard">
-                <h2>Motherboard</h2>
-            </a>
+    
+    <main>
+        <div class="content-wrapper">
+            <!-- Left side category buttons -->
+            <div id="category-buttons-container">
+                <div class="category-btn-container">
+                    <button class="category-btn" id="cpu-btn"><img src="../images/cpu.png" alt="CPU">CPU</button>
+                    <button class="category-btn" id="cpu-cooler-btn"><img src="../images/cpu-cooler.png" alt="CPU Cooler">CPU Cooler</button>
+                    <button class="category-btn" id="gpu-btn"><img src="../images/gpu.png" alt="GPU">GPU</button>
+                    <button class="category-btn" id="ram-btn"><img src="../images/ram.png" alt="RAM">RAM</button>
+                </div>
+                <div class="category-btn-container">
+                    <button class="category-btn" id="storage-btn"><img src="../images/storage.png" alt="Storage">Storage</button>
+                    <button class="category-btn" id="psu-btn"><img src="../images/psu.png" alt="PSU">PSU</button>
+                    <button class="category-btn" id="case-btn"><img src="../images/case.png" alt="Case">Case</button>
+                    <button class="category-btn" id="motherboard-btn"><img src="../images/motherboard.png" alt="Motherboard">Motherboard</button>
+                </div>
+            </div>
+            
+            <!-- Right side where parts are displayed -->
+            <div id="parts-container"></div>
         </div>
     </main>
+    
+    <!-- Footer Section -->
+    <footer>
+        <p>&copy; 2024 mycomputer. All rights reserved.</p>
+    </footer>
+
+    <script src="../script/script.js"></script>
 </body>
 </html>
