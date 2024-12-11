@@ -211,7 +211,7 @@ $conn->close();
                 echo '<ul class="specs">';
                 echo '<li><strong>VRAM:</strong> ' . $row['vram'] . '</li>';
                 echo '<li><strong>Recommended PSU:</strong> ' . $row['recommended_psu'] . '</li>';
-                echo '<li><strong>Price:</strong> $' . $row['price'] . '</li>';
+                echo '<li><strong>Price:</strong> Rp ' . $row['price'] . '</li>';
                 echo '<li><strong><a href="' . $row['link'] . '" target="_blank">View More</a></strong></li>';
                 echo '</ul>';
 

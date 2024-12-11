@@ -208,7 +208,7 @@ $conn->close();
                 echo '<li><strong>Read Speed:</strong> ' . $row['read_speed'] . '</li>';
                 echo '<li><strong>Write Speed:</strong> ' . $row['write_speed'] . '</li>';
                 echo '<li><strong>Form Factor:</strong> ' . $row['form_factor'] . '</li>';
-                echo '<li><strong>Price:</strong> $' . $row['price'] . '</li>';
+                echo '<li><strong>Price:</strong> Rp ' . $row['price'] . '</li>';
                 echo '<li><strong><a href="' . $row['link'] . '" target="_blank">View More</a></strong></li>';
                 echo '</ul>';
 

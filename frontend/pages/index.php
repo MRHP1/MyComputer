@@ -20,10 +20,8 @@ if (!isset($_SESSION['UID'])) {
     exit();
 }
 
-// Fetch user information including selected components
-$user_info = null;
-
 $user_id = $_SESSION['UID'];
+$total_price = 0; 
 
 // Handle CPU removal
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_cpu'])) {
@@ -39,14 +37,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_cpu'])) {
 
 // Fetch user and component information
 $stmt = $conn->prepare("SELECT users.username, 
-                                users.user_cpu, CPU.name AS cpu_name, CPU.core, CPU.core_clock, 
-                                CPU_Cooler.name AS cooler_name, 
-                                GPU.name AS gpu_name, 
-                                Motherboard.name AS motherboard_name, 
-                                PC_Case.name AS case_name, 
-                                PSU.name AS psu_name, 
-                                RAM.name AS ram_name, 
-                                Storage.name AS storage_name 
+                                users.user_cpu, CPU.name AS cpu_name, CPU.core, CPU.core_clock, CPU.price AS cpu_price, 
+                                CPU_Cooler.name AS cooler_name, CPU_Cooler.price AS cooler_price, 
+                                GPU.name AS gpu_name, GPU.price AS gpu_price, 
+                                Motherboard.name AS motherboard_name, Motherboard.price AS motherboard_price, 
+                                PC_Case.name AS case_name, PC_Case.price AS case_price, 
+                                PSU.name AS psu_name, PSU.price AS psu_price, 
+                                RAM.name AS ram_name, RAM.price AS ram_price, 
+                                Storage.name AS storage_name, Storage.price AS storage_price 
                         FROM users 
                         LEFT JOIN CPU ON users.user_cpu = CPU.id 
                         LEFT JOIN CPU_Cooler ON users.user_cooler = CPU_Cooler.id 
@@ -57,6 +55,7 @@ $stmt = $conn->prepare("SELECT users.username,
                         LEFT JOIN RAM ON users.user_ram = RAM.id 
                         LEFT JOIN Storage ON users.user_storage = Storage.id 
                         WHERE users.id = ?");
+
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -76,8 +75,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_part'])) {
 
 if ($result->num_rows > 0) {
     $user_info = $result->fetch_assoc();
+
+    // Calculate the total price
+    $total_price += $user_info['cpu_price'] ?: 0;
+    $total_price += $user_info['cooler_price'] ?: 0;
+    $total_price += $user_info['gpu_price'] ?: 0;
+    $total_price += $user_info['motherboard_price'] ?: 0;
+    $total_price += $user_info['case_price'] ?: 0;
+    $total_price += $user_info['psu_price'] ?: 0;
+    $total_price += $user_info['ram_price'] ?: 0;
+    $total_price += $user_info['storage_price'] ?: 0;
+
+    // Store the total price in the session
+    $_SESSION['total_price'] = $total_price;
 }
 
+// Close the statement and connection
 $stmt->close();
 $conn->close();
 ?>
@@ -194,125 +207,141 @@ $conn->close();
             <tr>
                 <th>Component</th>
                 <th>Details</th>
+                <th>Price</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
-        <tr>
-    <td>CPU</td>
-    <td><?= $user_info['cpu_name'] ? htmlspecialchars($user_info['cpu_name']) . " - " . htmlspecialchars($user_info['core']) . " cores, " . htmlspecialchars($user_info['core_clock']) . " GHz" : "Not selected" ?></td>
-    <td style="text-align: right;">
-        <?php if ($user_info['cpu_name']): ?>
-            <form method="POST" style="display: inline;">
-                <input type="hidden" name="part_column" value="user_cpu">
-                <button type="submit" name="remove_part" style="background-color: #dc3545; color: white; border: none; border-radius: 4px; padding: 8px 12px; cursor: pointer; transition: background-color 0.3s ease;">Remove</button>
-            </form>
-        <?php else: ?>
-            <a href="cpu.php" style="background-color: #007bff; color: white; border-radius: 4px; padding: 8px 12px; text-decoration: none; display: inline-block;">Choose/Change</a>
-        <?php endif; ?>
-    </td>
-</tr>
-<tr>
-    <td>RAM</td>
-    <td><?= $user_info['ram_name'] ? htmlspecialchars($user_info['ram_name']) : "Not selected" ?></td>
-    <td style="text-align: right;">
-        <?php if ($user_info['ram_name']): ?>
-            <form method="POST" style="display: inline;">
-                <input type="hidden" name="part_column" value="user_ram">
-                <button type="submit" name="remove_part" style="background-color: #dc3545; color: white; border: none; border-radius: 4px; padding: 8px 12px; cursor: pointer; transition: background-color 0.3s ease;">Remove</button>
-            </form>
-        <?php else: ?>
-            <a href="ram.php" style="background-color: #007bff; color: white; border-radius: 4px; padding: 8px 12px; text-decoration: none; display: inline-block;">Choose/Change</a>
-        <?php endif; ?>
-    </td>
-</tr>
-<tr>
-    <td>Storage</td>
-    <td><?= $user_info['storage_name'] ? htmlspecialchars($user_info['storage_name']) : "Not selected" ?></td>
-    <td style="text-align: right;">
-        <?php if ($user_info['storage_name']): ?>
-            <form method="POST" style="display: inline;">
-                <input type="hidden" name="part_column" value="user_storage">
-                <button type="submit" name="remove_part" style="background-color: #dc3545; color: white; border: none; border-radius: 4px; padding: 8px 12px; cursor: pointer; transition: background-color 0.3s ease;">Remove</button>
-            </form>
-        <?php else: ?>
-            <a href="storage.php" style="background-color: #007bff; color: white; border-radius: 4px; padding: 8px 12px; text-decoration: none; display: inline-block;">Choose/Change</a>
-        <?php endif; ?>
-    </td>
-</tr>
-<tr>
-    <td>GPU</td>
-    <td><?= $user_info['gpu_name'] ? htmlspecialchars($user_info['gpu_name']) : "Not selected" ?></td>
-    <td style="text-align: right;">
-        <?php if ($user_info['gpu_name']): ?>
-            <form method="POST" style="display: inline;">
-                <input type="hidden" name="part_column" value="user_gpu">
-                <button type="submit" name="remove_part" style="background-color: #dc3545; color: white; border: none; border-radius: 4px; padding: 8px 12px; cursor: pointer; transition: background-color 0.3s ease;">Remove</button>
-            </form>
-        <?php else: ?>
-            <a href="gpu.php" style="background-color: #007bff; color: white; border-radius: 4px; padding: 8px 12px; text-decoration: none; display: inline-block;">Choose/Change</a>
-        <?php endif; ?>
-    </td>
-</tr>
-<tr>
-    <td>PC Case</td>
-    <td><?= $user_info['case_name'] ? htmlspecialchars($user_info['case_name']) : "Not selected" ?></td>
-    <td style="text-align: right;">
-        <?php if ($user_info['case_name']): ?>
-            <form method="POST" style="display: inline;">
-                <input type="hidden" name="part_column" value="user_case">
-                <button type="submit" name="remove_part" style="background-color: #dc3545; color: white; border: none; border-radius: 4px; padding: 8px 12px; cursor: pointer; transition: background-color 0.3s ease;">Remove</button>
-            </form>
-        <?php else: ?>
-            <a href="pc_case.php" style="background-color: #007bff; color: white; border-radius: 4px; padding: 8px 12px; text-decoration: none; display: inline-block;">Choose/Change</a>
-        <?php endif; ?>
-    </td>
-</tr>
-<tr>
-    <td>PSU</td>
-    <td><?= $user_info['psu_name'] ? htmlspecialchars($user_info['psu_name']) : "Not selected" ?></td>
-    <td style="text-align: right;">
-        <?php if ($user_info['psu_name']): ?>
-            <form method="POST" style="display: inline;">
-                <input type="hidden" name="part_column" value="user_psu">
-                <button type="submit" name="remove_part" style="background-color: #dc3545; color: white; border: none; border-radius: 4px; padding: 8px 12px; cursor: pointer; transition: background-color 0.3s ease;">Remove</button>
-            </form>
-        <?php else: ?>
-            <a href="psu.php" style="background-color: #007bff; color: white; border-radius: 4px; padding: 8px 12px; text-decoration: none; display: inline-block;">Choose/Change</a>
-        <?php endif; ?>
-    </td>
-</tr>
-<tr>
-    <td>CPU Cooler</td>
-    <td><?= $user_info['cooler_name'] ? htmlspecialchars($user_info['cooler_name']) : "Not selected" ?></td>
-    <td style="text-align: right;">
-        <?php if ($user_info['cooler_name']): ?>
-            <form method="POST" style="display: inline;">
-                <input type="hidden" name="part_column" value="user_cooler">
-                <button type="submit" name="remove_part" style="background-color: #dc3545; color: white; border: none; border-radius: 4px; padding: 8px 12px; cursor: pointer; transition: background-color 0.3s ease;">Remove</button>
-            </form>
-        <?php else: ?>
-            <a href="cpu_cooler.php" style="background-color: #007bff; color: white; border-radius: 4px; padding: 8px 12px; text-decoration: none; display: inline-block;">Choose/Change</a>
-        <?php endif; ?>
-    </td>
-</tr>
-<tr>
-    <td>Motherboard</td>
-    <td><?= $user_info['motherboard_name'] ? htmlspecialchars($user_info['motherboard_name']) : "Not selected" ?></td>
-    <td style="text-align: right;">
-        <?php if ($user_info['motherboard_name']): ?>
-            <form method="POST" style="display: inline;">
-                <input type="hidden" name="part_column" value="user_motherboard">
-                <button type="submit" name="remove_part" style="background-color: #dc3545; color: white; border: none; border-radius: 4px; padding: 8px 12px; cursor: pointer; transition: background-color 0.3s ease;">Remove</button>
-            </form>
-        <?php else: ?>
-            <a href="motherboard.php" style="background-color: #007bff; color: white; border-radius: 4px; padding: 8px 12px; text-decoration: none; display: inline-block;">Choose/Change</a>
-        <?php endif; ?>
-    </td>
-</tr>
-
-            </tbody>
-        </table>
-    </div>
+            <tr>
+                <td>CPU</td>
+                <td><?= $user_info['cpu_name'] ? htmlspecialchars($user_info['cpu_name']) . " - " . htmlspecialchars($user_info['core']) . " cores, " . htmlspecialchars($user_info['core_clock']) . " GHz" : "Not selected" ?></td>
+                <td><?= $user_info['cpu_price'] ? "Rp " . number_format($user_info['cpu_price'], 2) : "-" ?></td>
+                <td>
+                    <?php if ($user_info['cpu_name']): ?>
+                        <form method="POST" style="display: inline;">
+                            <input type="hidden" name="part_column" value="user_cpu">
+                            <button type="submit" name="remove_part">Remove</button>
+                        </form>
+                    <?php else: ?>
+                        <a href="cpu.php">Choose/Change</a>
+                    <?php endif; ?>
+                </td>
+            </tr>
+            <tr>
+                <td>RAM</td>
+                <td><?= $user_info['ram_name'] ? htmlspecialchars($user_info['ram_name']) : "Not selected" ?></td>
+                <td><?= $user_info['ram_price'] ? "Rp " . number_format($user_info['ram_price'], 2) : "-" ?></td>
+                <td>
+                    <?php if ($user_info['ram_name']): ?>
+                        <form method="POST" style="display: inline;">
+                            <input type="hidden" name="part_column" value="user_ram">
+                            <button type="submit" name="remove_part">Remove</button>
+                        </form>
+                    <?php else: ?>
+                        <a href="ram.php">Choose/Change</a>
+                    <?php endif; ?>
+                </td>
+            </tr>
+            <tr>
+                <td>Storage</td>
+                <td><?= $user_info['storage_name'] ? htmlspecialchars($user_info['storage_name']) : "Not selected" ?></td>
+                <td><?= $user_info['storage_price'] ? "Rp " . number_format($user_info['storage_price'], 2) : "-" ?></td>
+                <td>
+                    <?php if ($user_info['storage_name']): ?>
+                        <form method="POST" style="display: inline;">
+                            <input type="hidden" name="part_column" value="user_storage">
+                            <button type="submit" name="remove_part">Remove</button>
+                        </form>
+                    <?php else: ?>
+                        <a href="storage.php">Choose/Change</a>
+                    <?php endif; ?>
+                </td>
+            </tr>
+            <tr>
+                <td>GPU</td>
+                <td><?= $user_info['gpu_name'] ? htmlspecialchars($user_info['gpu_name']) : "Not selected" ?></td>
+                <td><?= $user_info['gpu_price'] ? "Rp " . number_format($user_info['gpu_price'], 2) : "-" ?></td>
+                <td>
+                    <?php if ($user_info['gpu_name']): ?>
+                        <form method="POST" style="display: inline;">
+                            <input type="hidden" name="part_column" value="user_gpu">
+                            <button type="submit" name="remove_part">Remove</button>
+                        </form>
+                    <?php else: ?>
+                        <a href="gpu.php">Choose/Change</a>
+                    <?php endif; ?>
+                </td>
+            </tr>
+            <tr>
+                <td>PC Case</td>
+                <td><?= $user_info['case_name'] ? htmlspecialchars($user_info['case_name']) : "Not selected" ?></td>
+                <td><?= $user_info['case_price'] ? "Rp " . number_format($user_info['case_price'], 2) : "-" ?></td>
+                <td>
+                    <?php if ($user_info['case_name']): ?>
+                        <form method="POST" style="display: inline;">
+                            <input type="hidden" name="part_column" value="user_case">
+                            <button type="submit" name="remove_part">Remove</button>
+                        </form>
+                    <?php else: ?>
+                        <a href="pc_case.php">Choose/Change</a>
+                    <?php endif; ?>
+                </td>
+            </tr>
+            <tr>
+                <td>PSU</td>
+                <td><?= $user_info['psu_name'] ? htmlspecialchars($user_info['psu_name']) : "Not selected" ?></td>
+                <td><?= $user_info['psu_price'] ? "Rp " . number_format($user_info['psu_price'], 2) : "-" ?></td>
+                <td>
+                    <?php if ($user_info['psu_name']): ?>
+                        <form method="POST" style="display: inline;">
+                            <input type="hidden" name="part_column" value="user_psu">
+                            <button type="submit" name="remove_part">Remove</button>
+                        </form>
+                    <?php else: ?>
+                        <a href="psu.php">Choose/Change</a>
+                    <?php endif; ?>
+                </td>
+            </tr>
+            <tr>
+                <td>CPU Cooler</td>
+                <td><?= $user_info['cooler_name'] ? htmlspecialchars($user_info['cooler_name']) : "Not selected" ?></td>
+                <td><?= $user_info['cooler_price'] ? "Rp " . number_format($user_info['cooler_price'], 2) : "-" ?></td>
+                <td>
+                    <?php if ($user_info['cooler_name']): ?>
+                        <form method="POST" style="display: inline;">
+                            <input type="hidden" name="part_column" value="user_cooler">
+                            <button type="submit" name="remove_part">Remove</button>
+                        </form>
+                    <?php else: ?>
+                        <a href="cpu_cooler.php">Choose/Change</a>
+                    <?php endif; ?>
+                </td>
+            </tr>
+            <tr>
+                <td>Motherboard</td>
+                <td><?= $user_info['motherboard_name'] ? htmlspecialchars($user_info['motherboard_name']) : "Not selected" ?></td>
+                <td><?= $user_info['motherboard_price'] ? "Rp " . number_format($user_info['motherboard_price'], 2) : "-" ?></td>
+                <td>
+                    <?php if ($user_info['motherboard_name']): ?>
+                        <form method="POST" style="display: inline;">
+                            <input type="hidden" name="part_column" value="user_motherboard">
+                            <button type="submit" name="remove_part">Remove</button>
+                        </form>
+                    <?php else: ?>
+                        <a href="motherboard.php">Choose/Change</a>
+                    <?php endif; ?>
+                </td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="2" style="font-weight: bold; text-align: right;">Total Price:</td>
+                <td style="font-weight: bold;">Rp <?= number_format($total_price, 2) ?></td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
 
 </body>
 </html>

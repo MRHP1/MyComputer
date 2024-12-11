@@ -243,7 +243,7 @@ $conn->close();
                 echo '<li><strong>Form Factor:</strong> ' . $row['form_factor'] . '</li>';
                 echo '<li><strong>Memory Max:</strong> ' . $row['memory_max'] . '</li>';
                 echo '<li><strong>Memory Slots:</strong> ' . $row['memory_slots'] . '</li>';
-                echo '<li><strong>Price:</strong> Rp' . $row['price'] . '</li>';
+                echo '<li><strong>Price:</strong> Rp ' . $row['price'] . '</li>';
                 echo '<li><strong><a href="' . $row['link'] . '" target="_blank">View More</a></strong></li>';
                 echo '</ul>';
 

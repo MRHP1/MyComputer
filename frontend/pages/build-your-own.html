@@ -14,10 +14,9 @@
             overflow: hidden;
         }
 
-        /* Wrapper for transitions */
         .wrapper {
             display: flex;
-            width: 200%; /* Double the width to accommodate both pages */
+            width: 200%;
             height: 100vh;
             transition: transform 0.5s ease-in-out;
         }
@@ -30,17 +29,10 @@
             justify-content: center;
             align-items: center;
             flex-direction: column;
-            position: relative;
         }
 
-        /* Page 1 */
-        .page1 {
+        .page1, .page2 {
             background-color: #f5f5f5;
-        }
-
-        /* Page 2 */
-        .page2 {
-            background-color: #ffffff;
         }
 
         header {
@@ -90,12 +82,11 @@
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.3s ease;
-            z-index: 10; /* Make sure it's on top of other elements */
         }
 
         .back-button:hover {
             background-color: #e17055;
-            transform: scale(1.05); /* Slightly scale the button when hovered */
+            transform: scale(1.05);
         }
 
         footer {
@@ -122,7 +113,7 @@
                     <p>GPU yang tinggi sangat penting untuk pengalaman gaming terbaik.</p>
                 </div>
                 <div class="choice productivity" onclick="selectOption('productivity')">
-                    <img src="../images/video-editor.png" alt="Seorang Video Editor">
+                    <img src="../images/video-editor.jpg" alt="Seorang Video Editor">
                     <h2>Productivity</h2>
                     <p>CPU yang cepat akan memaksimalkan pekerjaan produktif Anda.</p>
                 </div>
@@ -158,25 +149,25 @@
     </footer>
 
     <script>
-        let selectedOptions = {};
-
         function selectOption(type) {
-            selectedOptions.type = type;
-            // Transition to Page 2
+            document.getElementById("selected_option").value = type;
             document.querySelector('.wrapper').style.transform = 'translateX(-100vw)';
         }
 
         function selectBudget(budget) {
-            selectedOptions.budget = budget;
-            // Redirect to results page
-            const query = new URLSearchParams(selectedOptions).toString();
-            window.location.href = `results.html?${query}`;
+            document.getElementById("selected_budget").value = budget;
+            document.getElementById("selection_form").submit();
         }
 
         function goBack() {
-            // Transition back to Page 1
             document.querySelector('.wrapper').style.transform = 'translateX(0)';
         }
     </script>
+
+    <!-- Formulir Tersembunyi -->
+    <form id="selection_form" method="POST" action="process_selection.php">
+        <input type="hidden" id="selected_option" name="option">
+        <input type="hidden" id="selected_budget" name="budget">
+    </form>
 </body>
 </html>

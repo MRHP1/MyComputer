@@ -208,7 +208,7 @@ $conn->close();
                 echo '<ul class="specs">';
                 echo '<li><strong>RPM:</strong> ' . $row['rpm'] . '</li>';
                 echo '<li><strong>Noise:</strong> ' . $row['noise'] . '</li>';
-                echo '<li><strong>Price:</strong> $' . $row['price'] . '</li>';
+                echo '<li><strong>Price:</strong> Rp ' . $row['price'] . '</li>';
                 echo '<li><strong><a href="' . $row['link'] . '" target="_blank">View More</a></strong></li>';
                 echo '</ul>';
 

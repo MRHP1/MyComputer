@@ -30,6 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cpu_id'])) {
     $stmt->bind_param("ii", $cpu_id, $user_id);
     if ($stmt->execute()) {
         // Redirect to index.php after success
+        
         header("Location: index.php");
         exit();
     } else {
@@ -227,7 +228,7 @@ $conn->close();
                 echo '<ul class="specs">';
                 echo '<li><strong>Core:</strong> ' . $row['core'] . '</li>';
                 echo '<li><strong>Clock Speed:</strong> ' . $row['core_clock'] . ' GHz</li>';
-                echo '<li><strong>Price:</strong> $' . $row['price'] . '</li>';
+                echo '<li><strong>Price:</strong> Rp ' . $row['price'] . '</li>';
                 echo '<li><strong><a href="' . $row['link'] . '" target="_blank">View More</a></strong></li>';
                 echo '</ul>';
 
