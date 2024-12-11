@@ -1,9 +1,64 @@
+<?php
+session_start();
+
+// Database connection
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "mycomputer";
+
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Check for login status
+if (!isset($_SESSION['UID'])) {
+    setcookie("login_pesan", "MAAF, anda harus login dulu", time() + (86400 * 30), "/");
+    header("location:login.php");
+    exit();
+}
+
+// Handle adding PC case to user's profile
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['case_id'])) {
+    $case_id = intval($_POST['case_id']);
+    $user_id = $_SESSION['UID'];
+
+    // Update the user's PC case in the database
+    $stmt = $conn->prepare("UPDATE users SET user_case = ? WHERE id = ?");
+    $stmt->bind_param("ii", $case_id, $user_id);
+    if ($stmt->execute()) {
+        echo "<p style='color: green;'>PC case added to your profile successfully!</p>";
+        header("Location: index.php"); // Redirect to index.php
+        exit(); // Ensure no further code is executed after redirect
+    } else {
+        echo "<p style='color: red;'>Failed to add PC case. Please try again.</p>";
+    }
+    $stmt->close();
+}
+
+
+// Fetch PC cases from the database
+$sql = "SELECT * FROM PC_Case";
+$result = $conn->query($sql);
+
+$cases = [];
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $cases[] = $row;
+    }
+}
+
+$conn->close();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CPU Coolers</title>
+    <title>PC Cases</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -49,6 +104,25 @@
             padding: 20px;
             background-color: #fff;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .edit-list-button {
+            display: block;
+            margin: 0 auto 20px;
+            background-color: #00cec9;
+            color: #fff;
+            padding: 10px 15px;
+            text-align: center;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
+        }
+
+        .edit-list-button:hover {
+            background-color: #81ecec;
         }
 
         .part {
@@ -99,119 +173,56 @@
             clear: both;
         }
 
-        .crud-buttons {
-            margin-top: 10px;
-        }
-
-        .crud-buttons button {
-            padding: 8px 12px;
-            margin-right: 5px;
+        .add-to-user {
+            background-color: #6c5ce7;
+            color: #fff;
+            padding: 10px 15px;
+            text-align: center;
             border: none;
             border-radius: 5px;
+            font-size: 1rem;
             cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        .crud-buttons .edit {
-            background-color: #00cec9;
-            color: #fff;
-        }
-
-        .crud-buttons .delete {
-            background-color: #d63031;
-            color: #fff;
-        }
-
-        .crud-buttons .upload {
-            background-color: #0984e3;
-            color: #fff;
-        }
-
-        .crud-buttons button:hover {
-            opacity: 0.9;
+        .add-to-user:hover {
+            background-color: #a29bfe;
         }
     </style>
 </head>
 <body>
     <header class="header">
-        <h1>Casing</h1>
+        <h1>PC Cases</h1>
     </header>
-    <a href="index.html" class="back-button">Back to Home</a>
+    <a href="index.php" class="back-button">Back to Home</a>
     <div class="parts-container">
+        <a href="pc_case_edit.php" class="edit-list-button">Edit List</a>
         <?php
-        // Database connection
-        $servername = "localhost";
-        $username = "root"; // Adjust as per your DB credentials
-        $password = "";
-        $dbname = "mycomputer";
-
-        $conn = new mysqli($servername, $username, $password, $dbname);
-
-        // Check connection
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        }
-
-        // Handle file upload
-        if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["upload_image"])) {
-            $pc_caseId = $_POST["pc_case_id"];
-            $imageFile = $_FILES["image"]["name"];
-            $targetDir = "../images/pc_case/";
-            $targetFile = $targetDir . basename($imageFile);
-
-            if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile)) {
-                $updateImageSql = "UPDATE PC_Case SET image = '$targetFile' WHERE id = $pc_caseId";
-                if ($conn->query($updateImageSql) === TRUE) {
-                    echo "<p>Image uploaded successfully for PC Case ID: $pc_caseId</p>";
-                } else {
-                    echo "<p>Error updating image: " . $conn->error . "</p>";
-                }
-            } else {
-                echo "<p>Failed to upload image.</p>";
-            }
-        }
-
-        // Fetch PC cases from the database
-        $sql = "SELECT * FROM PC_Case";
-        $result = $conn->query($sql);
-
-        if ($result->num_rows > 0) {
-            while($row = $result->fetch_assoc()) {
-                $imagePath = $row["image"] ?: "../images/pc_case/default.jpg"; // Default image if none exists
+        if (count($cases) > 0) {
+            foreach ($cases as $row) {
+                $imagePath = $row['image'] ?: "../images/pc_case/default.jpg";
 
                 echo '<div class="part">';
-                echo '<img src="' . $imagePath . '" alt="' . $row["name"] . '">';
-                echo '<h3>' . $row["name"] . '</h3>';
+                echo '<img src="' . $imagePath . '" alt="' . $row['name'] . '">';
+                echo '<h3>' . $row['name'] . '</h3>';
                 echo '<ul class="specs">';
-                echo '<li><strong>Type:</strong> ' . $row["type"] . '</li>';
-                echo '<li><strong>Dimensions:</strong> ' . $row["dimensions"] . '</li>';
-                echo '<li><strong>Price:</strong> $' . $row["price"] . '</li>';
-                echo '<li><strong><a href="' . $row["link"] . '" target="_blank">View More</a></strong></li>';
+                echo '<li><strong>Type:</strong> ' . $row['type'] . '</li>';
+                echo '<li><strong>Dimensions:</strong> ' . $row['dimensions'] . '</li>';
+                echo '<li><strong>Price:</strong> $' . $row['price'] . '</li>';
+                echo '<li><strong><a href="' . $row['link'] . '" target="_blank">View More</a></strong></li>';
                 echo '</ul>';
 
-                // CRUD Buttons
-                echo '<div class="crud-buttons">';
-                echo '<form action="pc_case_edit.php" method="GET" style="display:inline;">';
-                echo '<input type="hidden" name="id" value="' . $row["id"] . '">';
-                echo '<button type="submit" class="edit">Edit</button>';
+                echo '<form action="" method="POST" style="display:inline;">';
+                echo '<input type="hidden" name="case_id" value="' . $row['id'] . '">';
+                echo '<button type="submit" class="add-to-user">Add to User</button>';
                 echo '</form>';
-                echo '<form action="pc_case_delete.php" method="POST" style="display:inline;">';
-                echo '<input type="hidden" name="id" value="' . $row["id"] . '">';
-                echo '<button type="submit" class="delete">Delete</button>';
-                echo '</form>';
-                echo '<form action="" method="POST" enctype="multipart/form-data" style="display:inline;">';
-                echo '<input type="hidden" name="pc_case_id" value="' . $row["id"] . '">';
-                echo '<input type="file" name="image" required>';
-                echo '<button type="submit" name="upload_image" class="upload">Upload Image</button>';
-                echo '</form>';
-                echo '</div>';
+
                 echo '<div class="clear"></div>';
                 echo '</div>';
             }
         } else {
             echo "<p>No PC cases available.</p>";
         }
-
-        $conn->close();
         ?>
     </div>
 </body>

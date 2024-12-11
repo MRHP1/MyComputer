@@ -1,9 +1,63 @@
+<?php
+session_start();
+
+// Database connection
+$servername = "localhost";
+$username = "root"; // Adjust as per your DB credentials
+$password = "";
+$dbname = "mycomputer";
+
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Check for login status
+if (!isset($_SESSION['UID'])) {
+    setcookie("login_pesan", "MAAF, anda harus login dulu", time() + (86400 * 30), "/");
+    header("location:login.php");
+    exit();
+}
+
+// Handle adding RAM to user's profile
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ram_id'])) {
+    $ram_id = intval($_POST['ram_id']);
+    $user_id = $_SESSION['UID'];
+
+    $stmt = $conn->prepare("UPDATE users SET user_ram = ? WHERE id = ?");
+    $stmt->bind_param("ii", $ram_id, $user_id);
+    if ($stmt->execute()) {
+        // Redirect to index.php after successful update
+        header("Location: index.php");
+        exit();
+    } else {
+        echo "<p style='color: red;'>Failed to add RAM. Please try again.</p>";
+    }
+    $stmt->close();
+}
+
+
+// Fetch RAMs from the database
+$sql = "SELECT * FROM RAM";
+$result = $conn->query($sql);
+
+$rams = [];
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $rams[] = $row;
+    }
+}
+
+$conn->close();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CPU Coolers</title>
+    <title>RAM</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -49,6 +103,25 @@
             padding: 20px;
             background-color: #fff;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .edit-list-button {
+            display: block;
+            margin: 0 auto 20px;
+            background-color: #00cec9;
+            color: #fff;
+            padding: 10px 15px;
+            text-align: center;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
+        }
+
+        .edit-list-button:hover {
+            background-color: #81ecec;
         }
 
         .part {
@@ -99,35 +172,20 @@
             clear: both;
         }
 
-        .crud-buttons {
-            margin-top: 10px;
-        }
-
-        .crud-buttons button {
-            padding: 8px 12px;
-            margin-right: 5px;
+        .add-to-user {
+            background-color: #6c5ce7;
+            color: #fff;
+            padding: 10px 15px;
+            text-align: center;
             border: none;
             border-radius: 5px;
+            font-size: 1rem;
             cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        .crud-buttons .edit {
-            background-color: #00cec9;
-            color: #fff;
-        }
-
-        .crud-buttons .delete {
-            background-color: #d63031;
-            color: #fff;
-        }
-
-        .crud-buttons .upload {
-            background-color: #0984e3;
-            color: #fff;
-        }
-
-        .crud-buttons button:hover {
-            opacity: 0.9;
+        .add-to-user:hover {
+            background-color: #a29bfe;
         }
     </style>
 </head>
@@ -135,83 +193,35 @@
     <header class="header">
         <h1>RAM</h1>
     </header>
-    <a href="index.html" class="back-button">Back to Home</a>
+    <a href="index.php" class="back-button">Back to Home</a>
     <div class="parts-container">
+        <a href="ram_edit.php" class="edit-list-button">Edit List</a>
         <?php
-        // Database connection
-        $servername = "localhost";
-        $username = "root"; // Adjust as per your DB credentials
-        $password = "";
-        $dbname = "mycomputer";
-
-        $conn = new mysqli($servername, $username, $password, $dbname);
-
-        // Check connection
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        }
-
-        // Handle file upload
-        if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["upload_image"])) {
-            $ramId = $_POST["ram_id"];
-            $imageFile = $_FILES["image"]["name"];
-            $targetDir = "../images/ram/";
-            $targetFile = $targetDir . basename($imageFile);
-
-            if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile)) {
-                $updateImageSql = "UPDATE RAM SET image = '$targetFile' WHERE id = $ramId";
-                if ($conn->query($updateImageSql) === TRUE) {
-                    echo "<p>Image uploaded successfully for RAM ID: $ramId</p>";
-                } else {
-                    echo "<p>Error updating image: " . $conn->error . "</p>";
-                }
-            } else {
-                echo "<p>Failed to upload image.</p>";
-            }
-        }
-
-        // Fetch RAM from the database
-        $sql = "SELECT * FROM RAM";
-        $result = $conn->query($sql);
-
-        if ($result->num_rows > 0) {
-            while($row = $result->fetch_assoc()) {
-                $imagePath = $row["image"] ?: "../images/ram/default.jpg"; // Default image if none exists
+        if (count($rams) > 0) {
+            foreach ($rams as $row) {
+                $imagePath = $row['image'] ?: "../images/ram/default.jpg";
 
                 echo '<div class="part">';
-                echo '<img src="' . $imagePath . '" alt="' . $row["name"] . '">';
-                echo '<h3>' . $row["name"] . '</h3>';
+                echo '<img src="' . $imagePath . '" alt="' . $row['name'] . '">';
+                echo '<h3>' . $row['name'] . '</h3>';
                 echo '<ul class="specs">';
-                echo '<li><strong>Generation:</strong> ' . $row["generation"] . '</li>';
-                echo '<li><strong>Speed:</strong> ' . $row["speed"] . '</li>';
-                echo '<li><strong>Price:</strong> $' . $row["price"] . '</li>';
-                echo '<li><strong><a href="' . $row["link"] . '" target="_blank">View More</a></strong></li>';
+                echo '<li><strong>Generation:</strong> ' . $row['generation'] . '</li>';
+                echo '<li><strong>Speed:</strong> ' . $row['speed'] . '</li>';
+                echo '<li><strong>Price:</strong> $' . $row['price'] . '</li>';
+                echo '<li><strong><a href="' . $row['link'] . '" target="_blank">View More</a></strong></li>';
                 echo '</ul>';
 
-                // CRUD Buttons
-                echo '<div class="crud-buttons">';
-                echo '<form action="ram_edit.php" method="GET" style="display:inline;">';
-                echo '<input type="hidden" name="id" value="' . $row["id"] . '">';
-                echo '<button type="submit" class="edit">Edit</button>';
+                echo '<form action="" method="POST" style="display:inline;">';
+                echo '<input type="hidden" name="ram_id" value="' . $row['id'] . '">';
+                echo '<button type="submit" class="add-to-user">Add to User</button>';
                 echo '</form>';
-                echo '<form action="ram_delete.php" method="POST" style="display:inline;">';
-                echo '<input type="hidden" name="id" value="' . $row["id"] . '">';
-                echo '<button type="submit" class="delete">Delete</button>';
-                echo '</form>';
-                echo '<form action="" method="POST" enctype="multipart/form-data" style="display:inline;">';
-                echo '<input type="hidden" name="ram_id" value="' . $row["id"] . '">';
-                echo '<input type="file" name="image" required>';
-                echo '<button type="submit" name="upload_image" class="upload">Upload Image</button>';
-                echo '</form>';
-                echo '</div>';
+
                 echo '<div class="clear"></div>';
                 echo '</div>';
             }
         } else {
-            echo "<p>No RAM available.</p>";
+            echo "<p>No RAMs available.</p>";
         }
-
-        $conn->close();
         ?>
     </div>
 </body>
