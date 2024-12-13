@@ -1,1 +1,0 @@
-yang dicoba kemarenb

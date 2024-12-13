@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PC Picker</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            overflow: hidden;
+        }
+
+        .wrapper {
+            display: flex;
+            width: 200%;
+            height: 100vh;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .page {
+            width: 100vw;
+            height: 100vh;
+            flex-shrink: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .page1, .page2 {
+            background-color: #f5f5f5;
+        }
+
+        header {
+            position: absolute;
+            top: 20px;
+            width: 100%;
+            text-align: center;
+            font-size: 2.5rem;
+            color: #2d3436;
+        }
+
+        .container, .budget-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .choice, .budget-option {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .choice:hover, .budget-option:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+        }
+
+        .choice img, .budget-option img {
+            max-width: 100%;
+            border-radius: 1rem;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background-color: #d63031;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .back-button:hover {
+            background-color: #e17055;
+            transform: scale(1.05);
+        }
+
+        footer {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            font-size: 1rem;
+            color: #2d3436;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Page 1 -->
+        <div class="page page1">
+            <header>
+                <h1>Pilih Kebutuhan PC Anda</h1>
+            </header>
+            <div class="container">
+                <div class="choice game" onclick="selectOption('game')">
+                    <img src="../images/gamer.jpg" alt="Seorang Gamer">
+                    <h2>Game</h2>
+                    <p>GPU yang tinggi sangat penting untuk pengalaman gaming terbaik.</p>
+                </div>
+                <div class="choice productivity" onclick="selectOption('productivity')">
+                    <img src="../images/video-editor.jpg" alt="Seorang Video Editor">
+                    <h2>Productivity</h2>
+                    <p>CPU yang cepat akan memaksimalkan pekerjaan produktif Anda.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page 2 -->
+        <div class="page page2">
+            <header>
+                <h1>Pilih Budget PC Anda</h1>
+                <p>Pilih budget yang sesuai untuk kebutuhan PC Anda</p>
+            </header>
+            <div class="budget-container">
+                <div class="budget-option" onclick="selectBudget(5000000)">
+                    <h2>Rp 5.000.000</h2>
+                    <p>Ideal untuk pengguna dengan budget terbatas namun tetap ingin performa terbaik.</p>
+                </div>
+                <div class="budget-option" onclick="selectBudget(10000000)">
+                    <h2>Rp 10.000.000</h2>
+                    <p>Budget seimbang untuk gaming dan produktivitas dengan spesifikasi mid-range.</p>
+                </div>
+                <div class="budget-option" onclick="selectBudget(20000000)">
+                    <h2>Rp 20.000.000</h2>
+                    <p>Untuk pengalaman gaming atau produktivitas high-end tanpa kompromi.</p>
+                </div>
+            </div>
+            <button class="back-button" onclick="goBack()">Kembali</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 PC Picker | Semua hak dilindungi.</p>
+    </footer>
+
+    <script>
+        function selectOption(type) {
+            document.getElementById("selected_option").value = type;
+            document.querySelector('.wrapper').style.transform = 'translateX(-100vw)';
+        }
+
+        function selectBudget(budget) {
+            document.getElementById("selected_budget").value = budget;
+            document.getElementById("selection_form").submit();
+        }
+
+        function goBack() {
+            document.querySelector('.wrapper').style.transform = 'translateX(0)';
+        }
+    </script>
+
+    <!-- Formulir Tersembunyi -->
+    <form id="selection_form" method="POST" action="process_selection.php">
+        <input type="hidden" id="selected_option" name="option">
+        <input type="hidden" id="selected_budget" name="budget">
+    </form>
+</body>
+</html>
