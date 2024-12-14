@@ -29,21 +29,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['motherboard_id'])) {
     $stmt = $conn->prepare("UPDATE users SET user_motherboard = ? WHERE id = ?");
     $stmt->bind_param("ii", $motherboard_id, $user_id);
     if ($stmt->execute()) {
-        echo "<p style='color: green;'>Motherboard added to your profile successfully!</p>";
-        header("Location: index.php"); // Redirect to index.php
-        exit(); // Ensure no further code is executed after redirect
+        // Redirect to index.php after success
+        
+        header("Location: index.php");
+        exit();
     } else {
         echo "<p style='color: red;'>Failed to add motherboard. Please try again.</p>";
     }
     $stmt->close();
 }
 
+// Handle search
+$searchQuery = "";
+if (!empty($_GET["search"])) {
+    $search = $conn->real_escape_string($_GET["search"]);
+    $searchQuery = " WHERE name LIKE '%$search%'";
+}
 
-// Fetch motherboards from the database
-$sql = "SELECT * FROM Motherboard";
+// Fetch the list of motherboards
+$motherboards = [];
+$sql = "SELECT * FROM motherboard" . $searchQuery;
 $result = $conn->query($sql);
 
-$motherboards = [];
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
         $motherboards[] = $row;
@@ -58,57 +65,139 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Motherboards</title>
+    <title>motherboard List</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f5f5f5;
-        }
 
-        .header {
-            text-align: center;
-            background-color: #2d3436;
-            color: #ffffff;
-            padding: 20px 10px;
-        }
-
-        .header h1 {
-            margin: 0;
-            font-size: 2.5rem;
-        }
-
-        .back-button {
+.navbar {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            background-color: #0984e3;
-            color: #fff;
-            padding: 10px 15px;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-            font-size: 0.9rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            top: 10px; /* Adjust this value to move the navbar down */
+            width: calc(100% - 20px); /* Optional: Adjust width if needed for spacing */
+            margin: 0 10px; /* Optional: Add horizontal margins */
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000; /* Ensure it stays above the hero section */
+            padding: 1rem 2rem;
+            color: white;
+            font-size: 1.2rem; /* Make text bigger */
+            border-radius: 14px;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease, display 0.3s ease, font-size 0.3s ease, padding 0.3s ease; /* Transition all relevant properties */
+            align-items: center; /* Centers the content vertically */
         }
 
-        .back-button:hover {
-            background-color: #74b9ff;
-            text-decoration: none;
+        .navbar .left-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .navbar .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: font-size 0.3s ease, gap 0.3s ease; /* Transition logo size and spacing */
+        }
+
+        .navbar .logo img {
+            height: 60px;
+            width: auto;
+        }
+
+        .navbar ul {
+            list-style: none;
+            display: flex;
+            gap: 1rem;
+            transition: gap 0.3s ease; /* Transition gap */
+        }
+
+        .navbar ul li {
+            position: relative;
+        }
+
+        .navbar ul li a {
+            font-size: 1.2rem; /* Increase font size */
+            color: white; /* Ensure text is visible on the hero image */
+            font-weight: bold;
+            transition: color 0.3s ease, font-size 0.3s ease; /* Transition text color and size */
+        }
+
+        .navbar ul li a:hover {
+            color: white;
+        }
+
+        .navbar ul li a:hover {
+            color: white;
+        }
+        
+        body {
+            overflow-x: hidden;
+            font-family: Arial, sans-serif;
+            display: flex; /* Enables Flexbox */
+            justify-content: center; /* Horizontally centers the content */
+            align-items: center; /* Vertically centers the content (for full height) */
+            min-height: 100vh; /* Ensures the body takes full viewport height */
+            margin: 0; /* Removes default margins */
+            background: url('../images/building.webp') no-repeat center/cover; /* Responsive background image */
+            background-attachment: fixed; /* Keeps the background fixed when scrolling */
+            background-size: cover; /* Ensures the image covers the entire viewport responsively */
         }
 
         .parts-container {
-            max-width: 1200px;
-            margin: 20px auto;
+            width: 50%;
+            margin-top: 10%;
             padding: 20px;
-            background-color: #fff;
+            background-color: #2b1b17;
+            border-radius: 24px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .search-bar {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .search-bar input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            outline: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background-color: rgb(187, 187, 173);
+        }
+
+        .search-bar button {
+            padding: 10px 20px;
+            background-color: #0984e3;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            font-size: 1rem;
+            cursor: pointer;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease; /* Smooth transition */
+        }
+
+        .search-bar button:hover {
+            background-color: #74b9ff;
         }
 
         .part {
             border-bottom: 1px solid #ddd;
-            padding: 15px 0;
+            padding: 15px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            background-color:#333;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition */
+        }
+
+        .part:hover {
+            transform: scale(1.05); /* Slightly enlarge the element */
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15); /* Enhance the shadow for a lifted effect */
         }
 
         .part:last-child {
@@ -116,10 +205,12 @@ $conn->close();
         }
 
         .part h3 {
+            color:white;
             margin: 0 0 10px;
         }
 
         .specs {
+            color:white;
             list-style: none;
             padding: 0;
             margin: 0 0 10px;
@@ -139,6 +230,7 @@ $conn->close();
             margin-right: 20px;
             float: left;
             object-fit: contain;
+            border-radius: 10px;
         }
 
         a {
@@ -160,77 +252,39 @@ $conn->close();
             padding: 10px 15px;
             text-align: center;
             border: none;
-            border-radius: 5px;
+            border-radius: 20px;
             font-size: 1rem;
             cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+            transition: background-color 0.3s ease; /* Smooth transition */
         }
 
         .add-to-user:hover {
             background-color: #a29bfe;
         }
-
-        .edit-list-button {
-            display: block;
-            margin: 0 auto 20px;
-            background-color: #00cec9;
-            color: #fff;
-            padding: 10px 20px;
-            text-align: center;
-            border: none;
-            border-radius: 5px;
-            font-size: 1rem;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .edit-list-button:hover {
-            background-color: #81ecec;
-        }
-
-        .edit-mode .crud-buttons {
-            display: block;
-        }
-                /* Popup styles */
-                .popup {
-            position: fixed;
-            bottom: -100px; /* Hidden initially */
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #fff;
-            padding: 10px 20px;
-            color: #333;
-            font-size: 1rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-            border-radius: 5px;
-            text-align: center;
-            max-width: 90%;
-            min-width: 200px;
-            z-index: 1000;
-            transition: bottom 0.5s ease, opacity 0.5s ease;
-        }
-
-        .popup.success {
-            border: 2px solid #2ecc71;
-            background-color: #dfffd6;
-            color: #27ae60;
-        }
-
-        .popup.error {
-            border: 2px solid #e74c3c;
-            background-color: #ffe6e6;
-            color: #c0392b;
-        }
     </style>
 </head>
 <body>
-    <header class="header">
-        <h1>Motherboards</h1>
-    </header>
-    <a href="index.php" class="back-button">Back to Home</a>
+<nav class="navbar">
+        <div class="left-section">
+            <div class="logo">
+                <img src="../logo2.png" alt="Logo">
+                <span>MyComputer™</span>
+            </div>
+        </div>
+        <ul>
+            <li><a href="index.php">Back to index</a></li>
+        </ul>
+    </nav>
     <div class="parts-container">
-    <a href="storage_edit.php" class="edit-list-button">Edit List</a>
+        <div class="search-bar">
+            <form action="" method="GET">
+                <input type="text" name="search" placeholder="Search motherboards...">
+                <button type="submit">Search</button>
+            </form>
+        </div>
         <?php
+        
         if (count($motherboards) > 0) {
             foreach ($motherboards as $row) {
                 $imagePath = $row['image'] ?: "../images/motherboard/default.jpg";

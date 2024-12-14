@@ -120,7 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_to_cart'])) {
             // Redirect or show a success message
             echo "Parts added to the community cart successfully!";
             // Redirect to avoid form resubmission on page refresh
-            header("location: index.php"); // Redirect to prevent resubmission
+            header("location: community_carts.php"); // Redirect to prevent resubmission
             exit();
 
         } else {
@@ -145,16 +145,18 @@ $conn->close();
 
         .navbar {
             position: fixed;
+            display: flex;
             top: 10px; /* Adjust this value to move the navbar down */
             width: calc(100% - 20px); /* Optional: Adjust width if needed for spacing */
             margin: 0 10px; /* Optional: Add horizontal margins */
-            background-color: transparent; /* Make navbar invisible */
+            background-color: rgba(0, 0, 0, 0.8);
             z-index: 1000; /* Ensure it stays above the hero section */
             padding: 1rem 2rem;
             color: white;
             font-size: 1.2rem; /* Make text bigger */
             border-radius: 14px;
             transition: background-color 0.3s ease, box-shadow 0.3s ease, display 0.3s ease, font-size 0.3s ease, padding 0.3s ease; /* Transition all relevant properties */
+            align-items: center; /* Centers the content vertically */
         }
 
         .navbar .left-section {
@@ -164,7 +166,7 @@ $conn->close();
         }
 
         .navbar .logo {
-            font-size: 4rem;
+            font-size: 2rem;
             font-weight: bold;
             display: flex;
             align-items: center;
@@ -173,9 +175,8 @@ $conn->close();
         }
 
         .navbar .logo img {
-            height: 100px;
+            height: 60px;
             width: auto;
-            transition: height 0.3s ease; /* Transition logo image size */
         }
 
         .navbar ul {
@@ -190,7 +191,6 @@ $conn->close();
         }
 
         .navbar ul li a {
-            background-color:orange;
             font-size: 1.2rem; /* Increase font size */
             color: white; /* Ensure text is visible on the hero image */
             font-weight: bold;
@@ -257,7 +257,7 @@ $conn->close();
             font-size: 16px;
         }
 
-        button, a {
+        button {
             padding: 8px 16px;
             font-size: 14px;
             color: white;
@@ -320,7 +320,6 @@ $conn->close();
             }
 
             .navbar ul li a {
-                background-color:orange;
                 font-size: 0.8rem; /* Increase font size */
                 font-weight: bold;
                 transition: color 0.3s ease, font-size 0.3s ease; /* Transition text color and size */
@@ -357,7 +356,6 @@ $conn->close();
             h1 {
                 font-size: 1rem;
                 margin-bottom: 20px;
-                font-family: 'Merriweather', serif;
             }
 
             table {
@@ -397,12 +395,13 @@ $conn->close();
         <div class="left-section">
             <div class="logo">
                 <img src="../logo2.png" alt="Logo">
-                <span>MyComputer™</span>
             </div>
         </div>
         <ul>
-        <li><p>You're logged in as: <?= htmlspecialchars($user_info['username']) ?></p></li>
-            <li><a href="../logout.php">Logout</a></li>
+        <li><p>MyComputer™</p></li>
+            <li><a href='../logout.php'>Logout</a></li>
+            <li><a href='../landing.php'>Back to Home</a></li>
+            <li><a href='community_carts.php'>Community Carts</a></li>
         </ul>
     </nav>
 
@@ -429,7 +428,7 @@ $conn->close();
                             <button type="submit" name="remove_part">Remove</button>
                         </form>
                     <?php else: ?>
-                        <a href="cpu.php">Choose/Change</a>
+                        <button onclick="window.location.href='cpu.php'">Choose</button>
                     <?php endif; ?>
                 </td>
             </tr>
@@ -444,7 +443,7 @@ $conn->close();
                             <button type="submit" name="remove_part">Remove</button>
                         </form>
                     <?php else: ?>
-                        <a href="ram.php">Choose/Change</a>
+                        <button onclick="window.location.href='ram.php'">Choose</button>
                     <?php endif; ?>
                 </td>
             </tr>
@@ -459,7 +458,7 @@ $conn->close();
                             <button type="submit" name="remove_part">Remove</button>
                         </form>
                     <?php else: ?>
-                        <a href="storage.php">Choose/Change</a>
+                        <button onclick="window.location.href='storage.php'">Choose</button>
                     <?php endif; ?>
                 </td>
             </tr>
@@ -474,7 +473,7 @@ $conn->close();
                             <button type="submit" name="remove_part">Remove</button>
                         </form>
                     <?php else: ?>
-                        <a href="gpu.php">Choose/Change</a>
+                        <button onclick="window.location.href='gpu.php'">Choose</button>
                     <?php endif; ?>
                 </td>
             </tr>
@@ -489,7 +488,7 @@ $conn->close();
                             <button type="submit" name="remove_part">Remove</button>
                         </form>
                     <?php else: ?>
-                        <a href="pc_case.php">Choose/Change</a>
+                        <button onclick="window.location.href='pc_case.php'">Choose</button>
                     <?php endif; ?>
                 </td>
             </tr>
@@ -504,7 +503,7 @@ $conn->close();
                             <button type="submit" name="remove_part">Remove</button>
                         </form>
                     <?php else: ?>
-                        <a href="psu.php">Choose/Change</a>
+                        <button onclick="window.location.href='psu.php'">Choose</button>
                     <?php endif; ?>
                 </td>
             </tr>
@@ -519,7 +518,7 @@ $conn->close();
                             <button type="submit" name="remove_part">Remove</button>
                         </form>
                     <?php else: ?>
-                        <a href="cpu_cooler.php">Choose/Change</a>
+                        <button onclick="window.location.href='cpu_cooler.php'">Choose</button>
                     <?php endif; ?>
                 </td>
             </tr>
@@ -534,7 +533,7 @@ $conn->close();
                             <button type="submit" name="remove_part">Remove</button>
                         </form>
                     <?php else: ?>
-                        <a href="motherboard.php">Choose/Change</a>
+                        <button onclick="window.location.href='motherboard.php'">Choose</button>
                     <?php endif; ?>
                 </td>
             </tr>
@@ -549,7 +548,7 @@ $conn->close();
         
     </table>
     <form method="POST">
-    <button type="submit" name="add_to_cart">Add Parts to Community Cart</button>
+    <button type="submit" name="add_to_cart" style="margin-top:12px;">Add Parts to Community Cart</button>
 </form>
 
 </div>
